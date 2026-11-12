@@ -9,7 +9,7 @@
 
   // ---- Settings you can edit ----
   const CONFIG = {
-    checkEveryTicks: 15,   // 30 ticks = 1 second
+    checkEveryTicks: 1,   // 30 ticks = 1 second
     reserveSeconds: 0,     // keep this many seconds of CPS unspent
     maxBuysPerCheck: 3,
     buyBuildings: true,
