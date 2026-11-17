@@ -2,4 +2,4 @@
 Game.LoadMod ("https://cdn.jsdelivr.net/gh/Kiek10/Kieks-mods-cookie-clicker@e82efd54778010960df700356a6ca297ba776a4d/Auto buyer.js"); //Auto buyer
 Game.LoadMod ("https://cdn.jsdelivr.net/gh/Kiek10/Kieks-mods-cookie-clicker@f3c18bf04455736ba307730ab6f19e0f98dcffbb/Graph.js");  //Graph
 Game.LoadMod ("https://cdn.jsdelivr.net/gh/Kiek10/Kieks-mods-cookie-clicker@01686cf328f0bc48e4d2b167deac1d4bb5f5e664/Auto farmer.js");
-Game.LoadMod ("https://cdn.jsdelivr.net/gh/Kiek10/Kieks-mods-cookie-clicker@708d53181c3cdce8ba3d24916ae76a46cb0a138c/mods/Chancemaker casion.js");
+Game.LoadMod ("https://cdn.jsdelivr.net/gh/Kiek10/Kieks-mods-cookie-clicker@b33cf7e2c9c19787adb79a30d7b81ad38d36c1f1/Chancemaker casion.js");
