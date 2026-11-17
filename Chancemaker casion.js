@@ -2,7 +2,7 @@
    Adds a "Casino" minigame to the Chancemaker (like Farm/Bank/Temple minigames).
    Games: Slots, Blackjack, Roulette. Bets are placed in cookies.
    Load: paste this whole file into the browser console (F12) while Cookie Clicker is open,
-   or load it as a local/Steam mod. You need Chancemaker level 1 (sugar lump) to open it. */
+   or load it as a local/Steam mod. A "Casino" bar appears under the Chancemaker row once it's unlocked. */
 
 Game.registerMod('chancemakerCasino', {
 	init: function () {
@@ -10,10 +10,26 @@ Game.registerMod('chancemakerCasino', {
 		var M = {};
 		Game.ChanceCasino = M;
 		M.parent = B;
-		B.minigame = M;
-		B.minigameName = 'Casino';
-		B.minigameUrl = 'chancemaker-casino-mod'; // truthy so the game shows the minigame button
-		B.minigameLoaded = true;                  // stops the game trying to download a script
+
+		/* Own toggle bar + panel directly under the Chancemaker row.
+		   This doesn't depend on the game's minigame loader, so it works no matter
+		   what level your Chancemaker already is when the mod loads. */
+		var row = l('row' + B.id);
+		M.bar = document.createElement('div');
+		M.bar.id = 'ccBar';
+		M.bar.textContent = '🎰 Casino (click to open)';
+		M.bar.onclick = function () {
+			M.open = !M.open;
+			M.panel.style.display = M.open ? 'block' : 'none';
+			M.bar.textContent = M.open ? '🎰 Casino (click to close)' : '🎰 Casino (click to open)';
+			if (M.open) M.render();
+		};
+		M.panel = document.createElement('div');
+		M.panel.id = 'ccPanel';
+		M.panel.style.display = 'none';
+		M.open = false;
+		row.parentNode.insertBefore(M.panel, row.nextSibling);
+		row.parentNode.insertBefore(M.bar, M.panel);
 
 		M.tab = 'slots';
 		M.pct = 5;
@@ -172,7 +188,7 @@ Game.registerMod('chancemakerCasino', {
 		document.head.appendChild(css);
 
 		M.render = function () {
-			var div = l('rowSpecial' + B.id); if (!div) return;
+			var div = M.panel; if (!div) return;
 			var h = '<div id="ccWrap">';
 			h += '<div class="ccRow"><b>🎰 Chancemaker Casino</b> &nbsp; Bank: <b id="ccBank">' + fmt(Game.cookies) + '</b> cookies</div>';
 			h += '<div class="ccRow">Bet: ';
@@ -217,17 +233,29 @@ Game.registerMod('chancemakerCasino', {
 			div.innerHTML = h;
 		};
 
-		/* hooks the game calls on minigames */
-		M.onResize = function () { M.render(); };
-		M.draw = function () {
-			if (!B.onMinigame) return;
-			var e = l('ccBank'); if (e) e.textContent = fmt(Game.cookies);
-		};
-		M.reset = function () { M.stats = { played: 0, net: 0, best: 0 }; M.bj = null; M.msg = 'Place your bets!'; M.render(); };
+		var css2 = document.createElement('style');
+		css2.textContent =
+			'#ccBar{margin:0 0 2px 0;padding:6px 12px;background:linear-gradient(#5a1d1d,#3a0f0f);color:#ffd96b;font-weight:bold;cursor:pointer;border-top:1px solid #c9a227;border-bottom:1px solid #c9a227;text-shadow:0 1px 2px #000;position:relative;z-index:50;}' +
+			'#ccBar:hover{filter:brightness(1.3);}' +
+			'#ccPanel{background:linear-gradient(#123d22,#0b2815);border-bottom:2px solid #c9a227;position:relative;z-index:50;}';
+		document.head.appendChild(css2);
+
+		Game.registerHook('draw', function () {
+			// only show once the Chancemaker has been unlocked
+			M.bar.style.display = B.locked ? 'none' : 'block';
+			if (B.locked) M.panel.style.display = 'none';
+			else if (M.open) {
+				M.panel.style.display = 'block';
+				var e = l('ccBank'); if (e && Game.T % 5 == 0) e.textContent = fmt(Game.cookies);
+			}
+		});
+		Game.registerHook('reset', function (hard) {
+			if (hard) { M.stats = { played: 0, net: 0, best: 0 }; M.bj = null; M.msg = 'Place your bets!'; }
+			M.render();
+		});
 
 		M.render();
-		B.refresh();
-		Game.Notify('Chancemaker Casino loaded', 'Level up your Chancemaker and click "View Casino".', [8, 6], 6);
+		Game.Notify('Chancemaker Casino loaded', 'Look for the 🎰 Casino bar under your Chancemaker.', [8, 6], 6);
 	},
 
 	save: function () {
