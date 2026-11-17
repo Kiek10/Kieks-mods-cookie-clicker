@@ -74,6 +74,19 @@ Game.registerMod('cookieGraph', {
     wrap.addEventListener('click', function (e) { if (e.target === wrap) M.toggle(false); });
     document.body.appendChild(wrap);
 
+    var SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc', 'UDc', 'DDc', 'TDc', 'QaDc', 'QiDc', 'SxDc', 'SpDc', 'OcDc', 'NoDc', 'Vg'];
+    M.short = function (n) {
+      if (!isFinite(n) || n <= 0) return '0';
+      var i = Math.floor(Math.log10(n) / 3);
+      if (i < 0) i = 0;
+      if (i >= SUF.length) return n.toExponential(2);
+      var v = n / Math.pow(10, 3 * i);
+      if (v >= 999.5 && i < SUF.length - 1) { v /= 1000; i++; }
+      var t = v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
+      if (t.indexOf('.') >= 0) t = t.replace(/\.?0+$/, '');
+      return t + SUF[i];
+    };
+
     function fmt(m) {
       if (m <= 0) return 'now';
       if (m < 1.5) return '-' + Math.round(m * 60) + 's';
@@ -92,12 +105,12 @@ Game.registerMod('cookieGraph', {
       c.font = '13px sans-serif'; c.fillStyle = '#ccc';
       c.fillText(count ? 'Total: ' + Beautify(total) + '   |   Avg: ' + Beautify(total / count * (60 / bsec)) + '/min' : 'No data yet - keep the game open', W / 2, 44);
 
-      var L = 70, R = 20, T = 58, B = 50, pw = W - L - R, ph = H - T - B;
+      var L = 80, R = 20, T = 58, B = 50, pw = W - L - R, ph = H - T - B;
       c.font = '12px sans-serif'; c.textAlign = 'right'; c.strokeStyle = '#444'; c.fillStyle = '#aaa';
       for (var g = 0; g <= 4; g++) {
         var y = T + ph - ph * g / 4;
         c.beginPath(); c.moveTo(L, y); c.lineTo(W - R, y); c.stroke();
-        c.fillText(Beautify(max * g / 4), L - 6, y + 4);
+        c.fillText(M.short(max * g / 4), L - 6, y + 4);
       }
       var bw = pw / n, w = bw > 4 ? bw - 1 : Math.max(1, bw);
       c.fillStyle = '#e0a030';
